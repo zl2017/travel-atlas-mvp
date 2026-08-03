@@ -26,10 +26,15 @@ TraveledMap 的核心模式是日程推进时地图自动聚焦当前步骤；Ma
 - 增加当前路线 HUD、当前日路线高亮和行程进度条。
 - 保留手机端横向站点滚动，避免地图和信息面板在窄屏上互相挤压。
 
+## V2.1 地理对应性修正
+
+- 地图框架使用 Leaflet，底图使用带署名的 OpenStreetMap / CARTO 瓦片，支持拖拽、缩放、缩放控件和地点弹窗。
+- 关键站点保留编号大标记；每日行程中的 34 个去重坐标全部生成小型地点标记。
+- 每个地点标记直接取自 `days[].map` 的经纬度，并与对应日期联动，避免出现路线经过但地图没有地点的情况。
+
 ## 公开参考
 
 - Wandria：<https://wandria.app/en>
 - Plot a Trip：<https://plotatrip.app/>
 - TraveledMap：<https://www.traveledmap.com/services/trip-itinerary>
 - Mapbox Scrollytelling：<https://demos.mapbox.com/scrollytelling/>
-

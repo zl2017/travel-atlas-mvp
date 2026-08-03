@@ -99,6 +99,11 @@ h1 em { font-style: normal; color: var(--orange); }
 .route-marker b { font: 9px var(--mono); color: var(--ink); }
 .route-marker i { position: absolute; right: -4px; top: -7px; color: var(--yellow); font: normal 13px var(--sans); }
 .marker-south { border-color: var(--mint); box-shadow: 0 0 0 4px rgba(181, 230, 213, .12), 0 5px 14px rgba(0,0,0,.38); }
+.route-waypoint-wrap { background: transparent; border: 0; }
+.route-waypoint { width: 12px; height: 12px; display: grid; place-items: center; border: 1px solid var(--yellow); border-radius: 50%; background: rgba(9, 22, 24, .9); box-shadow: 0 0 0 3px rgba(255, 207, 110, .12), 0 3px 8px rgba(0,0,0,.35); }
+.route-waypoint i { width: 4px; height: 4px; border-radius: 50%; background: var(--yellow); }
+.route-waypoint.marker-south { border-color: var(--mint); box-shadow: 0 0 0 3px rgba(181, 230, 213, .12), 0 3px 8px rgba(0,0,0,.35); }
+.route-waypoint.marker-south i { background: var(--mint); }
 .route-line-animated { stroke-dasharray: 2 9; animation: route-flow 12s linear infinite; }
 .day-focus-line { filter: drop-shadow(0 0 4px rgba(255, 207, 110, .8)); }
 @keyframes route-flow { to { stroke-dashoffset: -220; } }

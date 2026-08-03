@@ -87,6 +87,29 @@
     { lat: 61.9000, lon: 10.1200, label: "Ringebu", zone: "south", dayId: "1003", kind: "road", note: "荒原入口" },
     { lat: 59.3293, lon: 18.0686, label: "Stockholm", zone: "south", dayId: "1004", kind: "city", note: "城市收束" }
   ];
+  const waypointLabels = {
+    "69.6492,18.9553": "Tromsø", "69.3554,17.308": "Brehsholmen", "69.4141,17.6639": "Hesten",
+    "69.468,17.598": "Ersfjord / Steinfjord", "69.3723,17.0675": "Gryllefjord", "69.3145,16.1194": "Andenes",
+    "68.857,16.564": "Gullesfjord", "68.149,13.611": "Svolvær", "68.1524,14.2042": "Henningsvær",
+    "68.198,13.536": "Haukland", "68.044,13.347": "Nusfjord", "67.933,13.068": "Reine",
+    "67.945,13.12": "Hamnøy", "67.88,12.982": "Å", "68.545,16.558": "Bjerkvik",
+    "60.393,5.3242": "Bergen", "60.862,7.113": "Flåm", "60.863,7.121": "Aurland",
+    "60.833,6.841": "Gudvangen", "61.571,6.482": "Skei / Jølster", "61.726,6.818": "Briksdal",
+    "61.879,6.974": "Lovatnet", "62.085,6.867": "Hellesylt", "62.101,7.205": "Geiranger",
+    "62.047,7.268": "Dalsnibba", "62.119,7.169": "Ørnesvingen", "62.456,7.67": "Trollstigen",
+    "63.017,7.728": "Atlantic Road", "62.675,8.551": "Sunndalsøra", "62.315,9.548": "Snøhetta / Dovrefjell",
+    "62.132,10.225": "Folldal", "61.9,10.12": "Ringebu", "59.9139,10.7522": "Oslo Airport",
+    "59.3293,18.0686": "Stockholm"
+  };
+  const coordinateKey = (coordinates) => coordinates.map((value) => Number(value)).join(",");
+  const waypointMap = new Map();
+  trip.days.forEach((day) => day.map.forEach((coordinates) => {
+    const key = coordinateKey(coordinates);
+    if (!waypointMap.has(key)) waypointMap.set(key, { lat: Number(coordinates[0]), lon: Number(coordinates[1]), label: waypointLabels[key] || `${day.label} / waypoint`, zone: day.zone.toLowerCase() === "north" ? "north" : "south", dayId: day.id, kind: "waypoint", note: `${day.date} · ${day.title}` });
+  }));
+  const waypointCatalog = [...waypointMap.values()];
+  const primaryKeys = new Set(placeCatalog.map((place) => coordinateKey([place.lat, place.lon])));
+  const secondaryWaypoints = waypointCatalog.filter((place) => !primaryKeys.has(coordinateKey([place.lat, place.lon])));
   const routeModes = {
     all: { label: "全程路线", code: "NORTH + SOUTH", copy: "从北极圈到峡湾，再沿公路回到城市。", layers: ["north", "south"], color: "#ff7d57" },
     north: { label: "北线 / 极光", code: "NORTH / 09.24—09.29", copy: "特罗姆瑟、Senja、Andøya 与罗弗敦，路线由海路接上公路。", layers: ["north"], color: "#ff7d57" },
@@ -129,6 +152,7 @@
       layers.forEach((layer) => layer.setStyle({ opacity: visible ? layer.options.baseOpacity : 0, weight: visible ? layer.options.baseWeight : 0 }));
     });
     (window.__routeMarkers || []).forEach(({ marker, place }) => marker.setOpacity(mode === "all" || mode === place.zone ? 1 : 0.22));
+    (window.__waypointMarkers || []).forEach(({ marker, place }) => marker.setOpacity(mode === "all" || mode === place.zone ? 0.92 : 0.18));
     renderRouteInspector(mode);
     if (shouldFit && window.__tripMap) {
       const coordinates = mode === "all" ? trip.route.north.concat(trip.route.south) : trip.route[mode];
@@ -154,8 +178,16 @@
       marker.on("click", () => selectDay(place.dayId));
       return { marker, place };
     });
+    const waypointMarkers = secondaryWaypoints.map((place) => {
+      const icon = L.divIcon({ className: "route-waypoint-wrap", html: `<span class="route-waypoint marker-${place.zone}"><i></i></span>`, iconSize: [18, 18], iconAnchor: [9, 9] });
+      const marker = L.marker([place.lat, place.lon], { icon, keyboard: true }).addTo(map).bindPopup(`<strong>${place.label}</strong><br><span>${place.note}</span>`);
+      marker.on("click", () => selectDay(place.dayId));
+      return { marker, place };
+    });
     const dayFocus = L.polyline([], { color: "#ffcf6e", weight: 3, opacity: 1, dashArray: "5 10", className: "day-focus-line", lineCap: "round" }).addTo(map);
-    window.__tripMap = map; window.__routeLayers = routeLayers; window.__routeMarkers = markers; window.__dayFocus = dayFocus;
+    const stopCount = document.getElementById("map-stop-count");
+    if (stopCount) stopCount.textContent = String(waypointCatalog.length);
+    window.__tripMap = map; window.__routeLayers = routeLayers; window.__routeMarkers = markers; window.__waypointMarkers = waypointMarkers; window.__dayFocus = dayFocus;
     document.querySelectorAll("[data-route-mode]").forEach((button) => button.addEventListener("click", () => setRouteMode(button.dataset.routeMode)));
     document.getElementById("map-reset")?.addEventListener("click", () => setRouteMode(activeRouteMode));
     setRouteMode("all", true); focusMap(getDay(selectedId), false);
