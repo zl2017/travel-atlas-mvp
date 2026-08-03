@@ -62,8 +62,8 @@ h1 em { font-style: normal; color: var(--orange); }
 .map-toolbar-note { display: flex; gap: 12px; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; }
 .map-toolbar-note span:first-child { color: var(--mint); }
 .map-shell { border: 0; overflow: hidden; }
-.map-shell #map { min-height: 590px; background: #071114; filter: saturate(.86) contrast(1.12); }
-.map-shell .leaflet-container { background: #071114; font-family: var(--sans); }
+.map-shell #map { min-height: 590px; background: #dbe6e3; }
+.map-shell .leaflet-container { background: #dbe6e3; font-family: var(--sans); }
 .map-shell .leaflet-control-zoom { border: 1px solid rgba(181, 230, 213, .22) !important; box-shadow: none; }
 .map-shell .leaflet-control-zoom a { background: rgba(9, 22, 24, .88); color: var(--mint); border-bottom-color: rgba(181, 230, 213, .2); }
 .map-shell .leaflet-control-attribution { background: rgba(9, 22, 24, .78); color: #9aaba7; }

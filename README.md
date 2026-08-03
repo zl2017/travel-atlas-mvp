@@ -5,7 +5,7 @@
 ## 页面
 
 - `index.html`：旅行总入口与可点击地球仪
-- `trip.html`：挪威 13 天路书、路线地图、日程、提醒
+- `trip.html`：挪威 13 天路书、彩色路线地图、日程、提醒
 - `data/norway.js`：公开版行程数据
 - `docs/product-brief.md`：产品定位、用户流程和 MVP 验收标准
 - `docs/mvp-scope.md`：页面结构、交互和发布方式
@@ -26,6 +26,8 @@ python3 -m http.server 4173
 ```
 
 然后打开 `http://localhost:4173/`。
+
+地图使用 Leaflet 加载免费的 CARTO Voyager / OpenStreetMap 底图，不需要 Google、高德或百度的 API Key。地图会在接近视口时再初始化，并在缩放结束后更新瓦片，以减少首屏等待和拖拽时的重复请求。
 
 ## GitHub Pages
 

@@ -164,7 +164,14 @@
     if (!mapEl || !window.L) return;
     const map = L.map(mapEl, { zoomControl: false, scrollWheelZoom: true, preferCanvas: true }).setView([63.2, 10.3], 5);
     L.control.zoom({ position: "bottomright" }).addTo(map);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors &copy; CARTO' }).addTo(map);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      maxNativeZoom: 18,
+      updateWhenIdle: true,
+      updateWhenZooming: false,
+      keepBuffer: 1,
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO Voyager'
+    }).addTo(map);
     const routeLayers = {};
     ["north", "south"].forEach((key) => {
       const color = key === "north" ? "#ff7d57" : "#b5e6d5";
@@ -191,6 +198,7 @@
     document.querySelectorAll("[data-route-mode]").forEach((button) => button.addEventListener("click", () => setRouteMode(button.dataset.routeMode)));
     document.getElementById("map-reset")?.addEventListener("click", () => setRouteMode(activeRouteMode));
     setRouteMode("all", true); focusMap(getDay(selectedId), false);
+    mapEl.setAttribute("aria-busy", "false");
   }
   function focusMap(day, shouldFly = true) {
     if (!window.__tripMap || !day.map?.length) return;
@@ -205,5 +213,18 @@
     }
   }
 
-  renderDayList(); renderDayDetail(); renderReminders(); initMap();
+  renderDayList(); renderDayDetail(); renderReminders();
+
+  // Defer the map until it is close to the viewport so the first screen stays responsive.
+  if (mapEl && "IntersectionObserver" in window) {
+    const mapObserver = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      initMap();
+      mapObserver.disconnect();
+    }, { rootMargin: "360px 0px" });
+    mapEl.setAttribute("aria-busy", "true");
+    mapObserver.observe(mapEl);
+  } else {
+    initMap();
+  }
 })();
