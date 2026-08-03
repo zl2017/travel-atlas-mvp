@@ -27,7 +27,7 @@ python3 -m http.server 4173
 
 然后打开 `http://localhost:4173/`。
 
-地图使用 MapLibre GL JS 加载免费的 OpenFreeMap / OpenStreetMap 矢量底图，不需要 Google、高德或百度的 API Key。地图文字和图层会随缩放层级自动更新，首页使用 globe 投影并支持拖拽旋转，路书页使用可旋转的矢量地图。
+地图使用 MapLibre GL JS 加载免费的 OpenFreeMap / OpenStreetMap 矢量底图，不需要 Google、高德或百度的 API Key。仓库同时内置轻量世界国家边界数据，作为外部瓦片较慢时的本地矢量兜底，因此静态页面仍能显示蓝色海洋、彩色陆地、国界和标签。地图文字和图层会随缩放层级自动更新，首页使用 globe 投影并支持拖拽旋转，路书页使用可旋转的矢量地图。
 
 ## GitHub Pages
 

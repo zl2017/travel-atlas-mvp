@@ -44,7 +44,7 @@
       { lat: 39.9042, lon: 116.4074, label: "北京", meta: "HOME BASE", accent: "home" }
     ];
     afterMapStyleReady(atlasMap, () => {
-      addRasterFallback(atlasMap);
+      addLocalBasemap(atlasMap, places);
       addRouteSource(atlasMap, "atlas-north", trip.route.north, "#ff7d57");
       addRouteSource(atlasMap, "atlas-south", trip.route.south, "#2d9b86");
       places.forEach((place, index) => {
@@ -98,6 +98,55 @@
     });
     const firstContentLayer = map.getStyle().layers?.find((layer) => layer.type !== "background");
     map.addLayer({ id: "atlas-osm-raster-fallback", type: "raster", source: sourceId, paint: { "raster-opacity": 1 } }, firstContentLayer?.id);
+  }
+
+  function addLocalBasemap(map, places = []) {
+    if (map.getSource("atlas-local-countries")) return;
+    const firstContentLayer = map.getStyle().layers?.find((layer) => layer.type !== "background");
+    map.addSource("atlas-local-countries", { type: "geojson", data: "data/world-countries.geojson" });
+    map.addLayer({
+      id: "atlas-local-ocean",
+      type: "background",
+      paint: { "background-color": "#88bdd8" },
+    }, firstContentLayer?.id);
+    map.addLayer({
+      id: "atlas-local-land",
+      type: "fill",
+      source: "atlas-local-countries",
+      paint: {
+        "fill-color": ["match", ["get", "CONTINENT"], "Europe", "#d8e8ce", "Asia", "#dce6c5", "North America", "#d7e4c7", "South America", "#d5e2bf", "Africa", "#e4dfb8", "Oceania", "#d5e1c2", "#d9e3c7"],
+        "fill-opacity": 0.94,
+      },
+    }, firstContentLayer?.id);
+    map.addLayer({
+      id: "atlas-local-boundaries",
+      type: "line",
+      source: "atlas-local-countries",
+      paint: { "line-color": "#75949a", "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.35, 4, 0.8, 8, 1.2], "line-opacity": 0.72 },
+    }, firstContentLayer?.id);
+    map.addLayer({
+      id: "atlas-local-country-labels",
+      type: "symbol",
+      source: "atlas-local-countries",
+      layout: {
+        "text-field": ["coalesce", ["get", "NAME_ZH"], ["get", "NAME_EN"]],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 0, 7, 2, 9, 5, 12, 8, 14],
+        "text-max-width": 8,
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+      },
+      paint: { "text-color": "#30555d", "text-halo-color": "#eef4e7", "text-halo-width": 1.3, "text-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.35, 1.7, 0.65, 3, 1] },
+    }, firstContentLayer?.id);
+    const placeFeatures = places.map((place) => ({ type: "Feature", properties: { label: place.label }, geometry: { type: "Point", coordinates: [Number(place.lon), Number(place.lat)] } }));
+    map.addSource("atlas-local-places", { type: "geojson", data: { type: "FeatureCollection", features: placeFeatures } });
+    map.addLayer({
+      id: "atlas-local-place-labels",
+      type: "symbol",
+      source: "atlas-local-places",
+      minzoom: 2.8,
+      layout: { "text-field": ["get", "label"], "text-size": ["interpolate", ["linear"], ["zoom"], 3, 9, 7, 13], "text-offset": [0, 1.2], "text-anchor": "top", "text-allow-overlap": false },
+      paint: { "text-color": "#234c56", "text-halo-color": "#f2f5eb", "text-halo-width": 1.5 },
+    }, firstContentLayer?.id);
   }
 
   function addRouteSource(map, id, coordinates, color) {
@@ -270,7 +319,7 @@
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
     afterMapStyleReady(map, () => {
-      addRasterFallback(map);
+      addLocalBasemap(map, placeCatalog);
       const routeLayers = {};
       ["north", "south"].forEach((key) => {
         const sourceId = `route-${key}`;
