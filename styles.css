@@ -56,8 +56,6 @@ h1 em { font-style: normal; color: var(--orange); }
 .atlas-marker-home i { background: var(--lavender); }
 .atlas-popup-meta { display: block; margin-bottom: 4px; color: #5b7770; font: 9px var(--mono); letter-spacing: .08em; }
 .atlas-popup-link, .atlas-popup-note { display: block; margin-top: 8px; color: #1b7969; font: 10px var(--mono); }
-.atlas-place-label, .route-place-label { padding: 4px 6px; border: 1px solid rgba(9,22,24,.2); border-radius: 3px; background: rgba(248,252,248,.9); box-shadow: 0 4px 12px rgba(0,0,0,.16); color: #143d38; font: 500 10px var(--mono); letter-spacing: .02em; white-space: nowrap; }
-.atlas-place-label::before, .route-place-label::before { border-top-color: rgba(248,252,248,.9); }
 @keyframes atlas-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes atlas-spin { to { transform: rotate(348deg) scaleY(.36); } }
 .journey-index { padding: 72px 0 60px; }.section-kicker { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; color: var(--muted); font: 10px var(--mono); letter-spacing: .11em; }.section-kicker span:first-child { color: var(--orange); }.section-kicker .line { height: 1px; flex: 1; background: var(--line); }

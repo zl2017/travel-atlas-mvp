@@ -55,7 +55,6 @@
       const action = place.href ? `<a class="atlas-popup-link" href="${place.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
       const marker = L.marker([place.lat, place.lon], { icon, keyboard: true }).addTo(atlasMap);
       marker.bindPopup(`<span class="atlas-popup-meta">${place.meta}</span><strong>${place.label}</strong>${action}`);
-      marker.bindTooltip(place.label, { permanent: true, direction: "top", offset: [0, -10], opacity: 0.96, className: "atlas-place-label" });
       marker.on("click", () => atlasMap.flyTo([place.lat, place.lon], 5.5, { duration: 0.45 }));
     });
 
@@ -242,7 +241,6 @@
     const markers = placeCatalog.map((place, index) => {
       const icon = L.divIcon({ className: "route-marker-wrap", html: `<span class="route-marker marker-${place.zone}"><b>${String(index + 1).padStart(2, "0")}</b><i>${iconFor(place.kind)}</i></span>`, iconSize: [38, 38], iconAnchor: [19, 19] });
       const marker = L.marker([place.lat, place.lon], { icon, keyboard: true }).addTo(map).bindPopup(`<strong>${place.label}</strong><br><span>${place.note}</span>`);
-      marker.bindTooltip(place.label, { permanent: true, direction: "top", offset: [0, -18], opacity: 0.94, className: "route-place-label" });
       marker.on("click", () => selectDay(place.dayId));
       return { marker, place };
     });
