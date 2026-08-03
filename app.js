@@ -23,16 +23,21 @@
       container: atlasEl,
       style: "https://tiles.openfreemap.org/styles/liberty",
       center: [60, 44],
-      zoom: 1.65,
+      zoom: 1.25,
       bearing: -12,
-      pitch: 12,
+      pitch: 8,
       projection: { type: "globe" },
-      dragRotate: true,
+      dragPan: false,
+      dragRotate: false,
+      touchZoomRotate: true,
+      touchPitch: true,
       pitchWithRotate: true,
       maxPitch: 58,
+      maxZoom: 3.7,
       attributionControl: true
     });
     atlasMap.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
+    installGlobeDrag(atlasMap, atlasEl, frame, ring);
 
     const places = [
       { lat: 69.6492, lon: 18.9553, label: "Tromsø", meta: "NORWAY / NORTH", accent: "north", href: "trip.html" },
@@ -44,6 +49,8 @@
       { lat: 39.9042, lon: 116.4074, label: "北京", meta: "HOME BASE", accent: "home" }
     ];
     afterMapStyleReady(atlasMap, () => {
+      atlasMap.setProjection({ type: "globe" });
+      atlasMap.setSky({ "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 3.4, 1, 3.7, 0.8] });
       addLocalBasemap(atlasMap, places);
       addRouteSource(atlasMap, "atlas-north", trip.route.north, "#ff7d57");
       addRouteSource(atlasMap, "atlas-south", trip.route.south, "#2d9b86");
@@ -55,7 +62,7 @@
         element.innerHTML = `<b>${String(index + 1).padStart(2, "0")}</b><i></i>`;
         const action = place.href ? `<a class="atlas-popup-link" href="${place.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
         const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([place.lon, place.lat]).setPopup(new maplibregl.Popup({ offset: 16, closeButton: true }).setHTML(`<span class="atlas-popup-meta">${place.meta}</span><strong>${place.label}</strong>${action}`)).addTo(atlasMap);
-        marker.getElement().addEventListener("click", () => atlasMap.flyTo({ center: [place.lon, place.lat], zoom: 5.5, duration: 500 }));
+        marker.getElement().addEventListener("click", () => atlasMap.flyTo({ center: [place.lon, place.lat], zoom: 2.9, duration: 700 }));
       });
     });
     atlasMap.on("dragstart", () => frame?.classList.add("is-dragging"));
@@ -67,6 +74,38 @@
     atlasMap.on("rotatestart", () => frame?.classList.add("is-dragging"));
     atlasMap.on("rotateend", () => frame?.classList.remove("is-dragging"));
     window.__atlasMap = atlasMap;
+  }
+
+  function installGlobeDrag(map, element, frame, ring) {
+    let gesture = null;
+    const stop = (event) => {
+      if (!gesture) return;
+      gesture = null;
+      frame?.classList.remove("is-dragging");
+      element.releasePointerCapture?.(event.pointerId);
+    };
+    element.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || event.target.closest(".maplibregl-marker, .maplibregl-ctrl")) return;
+      const center = map.getCenter();
+      gesture = { x: event.clientX, y: event.clientY, center, bearing: map.getBearing(), pitch: map.getPitch() };
+      element.setPointerCapture?.(event.pointerId);
+      frame?.classList.add("is-dragging");
+      event.preventDefault();
+    }, { passive: false });
+    element.addEventListener("pointermove", (event) => {
+      if (!gesture) return;
+      const dx = event.clientX - gesture.x;
+      const dy = event.clientY - gesture.y;
+      const longitude = ((gesture.center.lng - dx * 0.22 + 540) % 360) - 180;
+      const latitude = Math.max(-78, Math.min(78, gesture.center.lat + dy * 0.12));
+      const pitch = Math.max(0, Math.min(44, gesture.pitch - dy * 0.06));
+      map.jumpTo({ center: [longitude, latitude], bearing: gesture.bearing + dx * 0.08, pitch });
+      ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
+      event.preventDefault();
+    }, { passive: false });
+    element.addEventListener("pointerup", stop);
+    element.addEventListener("pointercancel", stop);
+    element.addEventListener("lostpointercapture", stop);
   }
 
   function toLineString(coordinates) {
