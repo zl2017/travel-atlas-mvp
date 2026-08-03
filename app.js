@@ -13,6 +13,66 @@
   });
   reveal();
 
+  function initAtlasMap() {
+    const atlasEl = document.getElementById("atlas-map");
+    const trip = window.NORWAY_TRIP;
+    if (!atlasEl || !window.L || !trip) return;
+    const frame = atlasEl.closest(".globe-map-frame");
+    const ring = document.querySelector(".globe-map-ring");
+    const atlasMap = L.map(atlasEl, {
+      zoomControl: false,
+      scrollWheelZoom: true,
+      worldCopyJump: true,
+      preferCanvas: true,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5
+    }).setView([48, 55], 2.25);
+    L.control.zoom({ position: "bottomright" }).addTo(atlasMap);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      maxNativeZoom: 18,
+      updateWhenIdle: true,
+      updateWhenZooming: false,
+      keepBuffer: 1,
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO Voyager'
+    }).addTo(atlasMap);
+
+    [
+      { lat: 69.6492, lon: 18.9553, label: "Tromsø", meta: "NORWAY / NORTH", accent: "north", href: "trip.html" },
+      { lat: 69.4141, lon: 17.6639, label: "Senja", meta: "NORWAY / NORTH", accent: "north", href: "trip.html" },
+      { lat: 67.9330, lon: 13.0680, label: "Reine", meta: "NORWAY / LOFOTEN", accent: "north", href: "trip.html" },
+      { lat: 60.3930, lon: 5.3242, label: "Bergen", meta: "NORWAY / FJORDS", accent: "south", href: "trip.html" },
+      { lat: 62.1010, lon: 7.2050, label: "Geiranger", meta: "NORWAY / FJORDS", accent: "south", href: "trip.html" },
+      { lat: 59.3293, lon: 18.0686, label: "Stockholm", meta: "SWEDEN / CITY", accent: "south", href: "trip.html" },
+      { lat: 39.9042, lon: 116.4074, label: "北京", meta: "HOME BASE", accent: "home" }
+    ].forEach((place, index) => {
+      const icon = L.divIcon({
+        className: "atlas-marker-wrap",
+        html: `<span class="atlas-marker atlas-marker-${place.accent}"><b>${String(index + 1).padStart(2, "0")}</b><i></i></span>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      });
+      const action = place.href ? `<a class="atlas-popup-link" href="${place.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
+      const marker = L.marker([place.lat, place.lon], { icon, keyboard: true }).addTo(atlasMap);
+      marker.bindPopup(`<span class="atlas-popup-meta">${place.meta}</span><strong>${place.label}</strong>${action}`);
+      marker.bindTooltip(place.label, { direction: "top", offset: [0, -10], opacity: 0.92 });
+      marker.on("click", () => atlasMap.flyTo([place.lat, place.lon], 5.5, { duration: 0.45 }));
+    });
+
+    L.polyline(trip.route.north, { color: "#ff7d57", weight: 3, opacity: 0.9, dashArray: "3 9", className: "atlas-route-line", lineCap: "round", lineJoin: "round" }).addTo(atlasMap);
+    L.polyline(trip.route.south, { color: "#2d9b86", weight: 3, opacity: 0.9, dashArray: "3 9", className: "atlas-route-line", lineCap: "round", lineJoin: "round" }).addTo(atlasMap);
+
+    atlasMap.on("dragstart", () => frame?.classList.add("is-dragging"));
+    atlasMap.on("drag", () => {
+      const longitude = atlasMap.getCenter().lng;
+      ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
+    });
+    atlasMap.on("dragend", () => frame?.classList.remove("is-dragging"));
+    window.__atlasMap = atlasMap;
+  }
+
+  initAtlasMap();
+
   if (!window.NORWAY_TRIP) return;
   const trip = window.NORWAY_TRIP;
   const mapEl = document.getElementById("map");

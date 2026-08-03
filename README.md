@@ -4,7 +4,7 @@
 
 ## 页面
 
-- `index.html`：旅行总入口与可点击地球仪
+- `index.html`：真实世界地图入口，标记已沉淀地点并可点击进入路书
 - `trip.html`：挪威 13 天路书、彩色路线地图、日程、提醒
 - `data/norway.js`：公开版行程数据
 - `docs/product-brief.md`：产品定位、用户流程和 MVP 验收标准

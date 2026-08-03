@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="atlas-page">
@@ -30,19 +31,15 @@
           </div>
         </div>
 
-        <div class="globe-stage reveal reveal-delay" aria-label="可点击的旅行地球仪">
+        <div class="globe-stage reveal reveal-delay" aria-label="可点击的旅行地图">
           <div class="orbit orbit-a"></div>
           <div class="orbit orbit-b"></div>
-          <div class="globe" role="img" aria-label="标记了挪威和瑞典的地球仪">
-            <span class="continent c-1"></span><span class="continent c-2"></span><span class="continent c-3"></span>
-            <span class="continent c-4"></span><span class="continent c-5"></span><span class="continent c-6"></span>
-            <button class="globe-pin pin-norway" type="button" aria-label="打开挪威 13 天路书" data-go="trip.html">
-              <span class="pin-pulse"></span><span class="pin-dot"></span><span class="pin-label">NORWAY / 01</span>
-            </button>
-            <span class="globe-pin pin-stockholm" aria-label="斯德哥尔摩"><span class="pin-dot pin-dot-muted"></span></span>
-            <span class="globe-pin pin-beijing" aria-label="北京"><span class="pin-dot pin-dot-muted"></span></span>
-            <div class="route-arc arc-north"></div><div class="route-arc arc-south"></div>
+          <div class="globe-map-frame">
+            <div id="atlas-map" class="globe-map" role="application" aria-label="旅行地点世界地图"></div>
+            <div class="globe-map-glare" aria-hidden="true"></div>
+            <div class="globe-map-chrome"><span>LIVE ATLAS / FREE MAP</span><span>DRAG · ZOOM · TAP</span></div>
           </div>
+          <div class="globe-map-ring" aria-hidden="true"></div>
           <p class="globe-caption"><span class="live-dot"></span> 01 active journey · drag to explore</p>
         </div>
       </section>
@@ -67,6 +64,8 @@
     </main>
 
     <footer class="site-footer"><span>旅记可视化 / PUBLIC EDITION</span><span>made for the road ahead</span></footer>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data/norway.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
