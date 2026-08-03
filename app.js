@@ -54,16 +54,7 @@
       addLocalBasemap(atlasMap, places);
       addRouteSource(atlasMap, "atlas-north", trip.route.north, "#ff7d57");
       addRouteSource(atlasMap, "atlas-south", trip.route.south, "#2d9b86");
-      places.forEach((place, index) => {
-        const element = document.createElement("button");
-        element.type = "button";
-        element.className = `atlas-marker atlas-marker-${place.accent}`;
-        element.setAttribute("aria-label", `${place.label} / ${place.meta}`);
-        element.innerHTML = `<b>${String(index + 1).padStart(2, "0")}</b><i></i>`;
-        const action = place.href ? `<a class="atlas-popup-link" href="${place.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
-        const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([place.lon, place.lat]).setPopup(new maplibregl.Popup({ offset: 16, closeButton: true }).setHTML(`<span class="atlas-popup-meta">${place.meta}</span><strong>${place.label}</strong>${action}`)).addTo(atlasMap);
-        marker.getElement().addEventListener("click", () => atlasMap.flyTo({ center: [place.lon, place.lat], zoom: 2.9, duration: 700 }));
-      });
+      addAtlasPlaceLayers(atlasMap, places);
     });
     atlasMap.on("dragstart", () => frame?.classList.add("is-dragging"));
     atlasMap.on("drag", () => {
@@ -192,6 +183,45 @@
     map.addSource(id, { type: "geojson", data: toLineString(coordinates) });
     map.addLayer({ id: `${id}-glow`, type: "line", source: id, paint: { "line-color": color, "line-width": 16, "line-opacity": 0.18, "line-blur": 5 } });
     map.addLayer({ id: `${id}-line`, type: "line", source: id, paint: { "line-color": color, "line-width": 4, "line-opacity": 0.96, "line-dasharray": [2, 1] } });
+  }
+
+  function addAtlasPlaceLayers(map, places) {
+    const features = places.map((place, index) => ({
+      type: "Feature",
+      properties: { label: place.label, meta: place.meta, accent: place.accent, href: place.href || "", indexLabel: String(index + 1).padStart(2, "0") },
+      geometry: { type: "Point", coordinates: [Number(place.lon), Number(place.lat)] }
+    }));
+    map.addSource("atlas-discovery-points", { type: "geojson", data: { type: "FeatureCollection", features } });
+    map.addLayer({
+      id: "atlas-discovery-halo",
+      type: "circle",
+      source: "atlas-discovery-points",
+      paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 0, 9, 2.5, 13, 3.7, 16], "circle-color": ["match", ["get", "accent"], "home", "#bdacd9", "south", "#b5e6d5", "#ff7d57"], "circle-opacity": 0.24, "circle-blur": 0.35 }
+    });
+    map.addLayer({
+      id: "atlas-discovery-points",
+      type: "circle",
+      source: "atlas-discovery-points",
+      paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 0, 5.5, 2.5, 8, 3.7, 10], "circle-color": ["match", ["get", "accent"], "home", "#bdacd9", "south", "#b5e6d5", "#ff7d57"], "circle-stroke-color": "#092022", "circle-stroke-width": 1.5, "circle-opacity": 0.98 }
+    });
+    map.addLayer({
+      id: "atlas-discovery-numbers",
+      type: "symbol",
+      source: "atlas-discovery-points",
+      layout: { "text-field": ["get", "indexLabel"], "text-size": ["interpolate", ["linear"], ["zoom"], 0, 6, 3.7, 9], "text-allow-overlap": true },
+      paint: { "text-color": "#092022", "text-halo-color": "#eef4e7", "text-halo-width": 0.7 }
+    });
+    map.on("click", "atlas-discovery-points", (event) => {
+      const feature = event.features?.[0];
+      if (!feature) return;
+      const properties = feature.properties || {};
+      const coordinates = feature.geometry.coordinates.slice();
+      const action = properties.href ? `<a class="atlas-popup-link" href="${properties.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
+      new maplibregl.Popup({ offset: 14, closeButton: true }).setLngLat(coordinates).setHTML(`<span class="atlas-popup-meta">${properties.meta}</span><strong>${properties.label}</strong>${action}`).addTo(map);
+      map.flyTo({ center: coordinates, zoom: 2.9, duration: 700 });
+    });
+    map.on("mouseenter", "atlas-discovery-points", () => { map.getCanvas().style.cursor = "pointer"; });
+    map.on("mouseleave", "atlas-discovery-points", () => { map.getCanvas().style.cursor = ""; });
   }
 
   initAtlasMap();
