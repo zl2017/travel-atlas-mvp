@@ -34,9 +34,10 @@ h1 em { font-style: normal; color: var(--orange); }
 .c-1 { width: 105px; height: 51px; left: 23%; top: 25%; border-radius: 65% 35% 50% 35%; transform: rotate(-18deg); }.c-2 { width: 84px; height: 130px; left: 43%; top: 29%; border-radius: 45% 55% 30% 70%; transform: rotate(18deg); }.c-3 { width: 45px; height: 76px; left: 58%; top: 56%; border-radius: 45% 50% 65% 30%; transform: rotate(-22deg); }.c-4 { width: 78px; height: 42px; left: 63%; top: 26%; border-radius: 55% 35% 60% 35%; transform: rotate(9deg); }.c-5 { width: 58px; height: 35px; left: 16%; top: 60%; border-radius: 60%; transform: rotate(-10deg); }.c-6 { width: 34px; height: 54px; left: 74%; top: 62%; border-radius: 45%; }
 .orbit { position: absolute; border: 1px solid rgba(181,230,213,.22); border-radius: 50%; pointer-events: none; }.orbit-a { width: 98%; aspect-ratio: 2.7 / 1; transform: rotate(-24deg); }.orbit-b { width: 118%; aspect-ratio: 2.7 / 1; transform: rotate(52deg); border-color: rgba(255,125,87,.24); }
 .globe-pin { position: absolute; z-index: 3; border: 0; background: transparent; cursor: pointer; }.pin-norway { left: 54%; top: 24%; transform: rotate(12deg); }.pin-stockholm { left: 58%; top: 27%; transform: rotate(12deg); }.pin-beijing { left: 78%; top: 37%; transform: rotate(12deg); }.pin-dot { width: 13px; height: 13px; display: block; border-radius: 50%; background: var(--orange); border: 2px solid var(--ink); box-shadow: 0 0 0 5px rgba(255,125,87,.14); }.pin-dot-muted { width: 8px; height: 8px; background: var(--mint); border-width: 1px; box-shadow: none; }.pin-label { position: absolute; left: 22px; top: -5px; white-space: nowrap; color: var(--ink); font: 10px var(--mono); letter-spacing: .06em; }.pin-pulse { position: absolute; inset: -13px; border: 1px solid var(--orange); border-radius: 50%; animation: ping 2s ease-out infinite; }.route-arc { position: absolute; left: 55%; top: 25%; width: 30%; height: 18%; border-top: 1px dashed rgba(255,125,87,.8); border-radius: 50%; transform: rotate(18deg); }.arc-south { left: 57%; top: 35%; width: 38%; border-color: rgba(181,230,213,.65); transform: rotate(28deg); }.globe-caption { position: absolute; bottom: 20px; margin: 0; font: 10px var(--mono); color: var(--muted); letter-spacing: .11em; }.live-dot { display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 4px rgba(255,125,87,.15); }
-.globe-map-frame { width: min(45vw, 530px); aspect-ratio: 1; position: relative; overflow: hidden; border: 1px solid rgba(181,230,213,.28); border-radius: 50%; background: #dbe6e3; box-shadow: inset -30px -24px 55px rgba(7,27,29,.35), inset 14px 12px 28px rgba(255,255,255,.24), 0 0 0 8px rgba(181,230,213,.06), 0 0 90px rgba(72,176,166,.2); animation: atlas-float 8s ease-in-out infinite; }
+.globe-map-frame { width: min(45vw, 530px); aspect-ratio: 1; position: relative; overflow: hidden; border: 1px solid rgba(181,230,213,.28); border-radius: 50%; background: #8ec5dc; box-shadow: inset -30px -24px 55px rgba(7,27,29,.35), inset 14px 12px 28px rgba(255,255,255,.24), 0 0 0 8px rgba(181,230,213,.06), 0 0 90px rgba(72,176,166,.2); animation: atlas-float 8s ease-in-out infinite; }
 .globe-map { position: absolute; inset: 0; z-index: 1; }
-.globe-map .leaflet-container { background: #dbe6e3; font-family: var(--sans); }
+.globe-map .leaflet-container { background: #8ec5dc; font-family: var(--sans); }
+.globe-map .leaflet-tile-container, .map-shell .leaflet-tile-container { filter: saturate(1.45) contrast(1.06) hue-rotate(4deg); }
 .globe-map .leaflet-control-zoom { border: 1px solid rgba(9,22,24,.32) !important; box-shadow: 0 5px 18px rgba(0,0,0,.18); }
 .globe-map .leaflet-control-zoom a { background: rgba(9,22,24,.82); color: var(--mint); border-bottom-color: rgba(181,230,213,.25); }
 .globe-map .leaflet-control-attribution { max-width: 55%; overflow: hidden; white-space: nowrap; background: rgba(9,22,24,.7); color: #d5e3df; font-size: 8px; }
@@ -55,6 +56,8 @@ h1 em { font-style: normal; color: var(--orange); }
 .atlas-marker-home i { background: var(--lavender); }
 .atlas-popup-meta { display: block; margin-bottom: 4px; color: #5b7770; font: 9px var(--mono); letter-spacing: .08em; }
 .atlas-popup-link, .atlas-popup-note { display: block; margin-top: 8px; color: #1b7969; font: 10px var(--mono); }
+.atlas-place-label, .route-place-label { padding: 4px 6px; border: 1px solid rgba(9,22,24,.2); border-radius: 3px; background: rgba(248,252,248,.9); box-shadow: 0 4px 12px rgba(0,0,0,.16); color: #143d38; font: 500 10px var(--mono); letter-spacing: .02em; white-space: nowrap; }
+.atlas-place-label::before, .route-place-label::before { border-top-color: rgba(248,252,248,.9); }
 @keyframes atlas-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes atlas-spin { to { transform: rotate(348deg) scaleY(.36); } }
 .journey-index { padding: 72px 0 60px; }.section-kicker { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; color: var(--muted); font: 10px var(--mono); letter-spacing: .11em; }.section-kicker span:first-child { color: var(--orange); }.section-kicker .line { height: 1px; flex: 1; background: var(--line); }
@@ -85,8 +88,8 @@ h1 em { font-style: normal; color: var(--orange); }
 .map-toolbar-note { display: flex; gap: 12px; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; }
 .map-toolbar-note span:first-child { color: var(--mint); }
 .map-shell { border: 0; overflow: hidden; }
-.map-shell #map { min-height: 590px; background: #dbe6e3; }
-.map-shell .leaflet-container { background: #dbe6e3; font-family: var(--sans); }
+.map-shell #map { min-height: 590px; background: #8ec5dc; }
+.map-shell .leaflet-container { background: #8ec5dc; font-family: var(--sans); }
 .map-shell .leaflet-control-zoom { border: 1px solid rgba(181, 230, 213, .22) !important; box-shadow: none; }
 .map-shell .leaflet-control-zoom a { background: rgba(9, 22, 24, .88); color: var(--mint); border-bottom-color: rgba(181, 230, 213, .2); }
 .map-shell .leaflet-control-attribution { background: rgba(9, 22, 24, .78); color: #9aaba7; }
