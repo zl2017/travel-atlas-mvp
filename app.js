@@ -188,7 +188,7 @@
   function addAtlasPlaceLayers(map, places) {
     const features = places.map((place, index) => ({
       type: "Feature",
-      properties: { label: place.label, meta: place.meta, accent: place.accent, href: place.href || "", indexLabel: String(index + 1).padStart(2, "0") },
+      properties: { label: place.label, meta: place.meta, accent: place.accent, href: place.href || "", indexLabel: String(index + 1).padStart(2, "0"), coordinates: `${Number(place.lat).toFixed(4)}°N, ${Number(place.lon).toFixed(4)}°E` },
       geometry: { type: "Point", coordinates: [Number(place.lon), Number(place.lat)] }
     }));
     map.addSource("atlas-discovery-points", { type: "geojson", data: { type: "FeatureCollection", features } });
@@ -217,7 +217,7 @@
       const properties = feature.properties || {};
       const coordinates = feature.geometry.coordinates.slice();
       const action = properties.href ? `<a class="atlas-popup-link" href="${properties.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
-      new maplibregl.Popup({ offset: 14, closeButton: true }).setLngLat(coordinates).setHTML(`<span class="atlas-popup-meta">${properties.meta}</span><strong>${properties.label}</strong>${action}`).addTo(map);
+      new maplibregl.Popup({ offset: 14, closeButton: true }).setLngLat(coordinates).setHTML(`<span class="atlas-popup-meta">${properties.meta}</span><strong>${properties.label}</strong><small class="atlas-popup-coordinates">${properties.coordinates}</small>${action}`).addTo(map);
       map.flyTo({ center: coordinates, zoom: 2.9, duration: 700 });
     });
     map.on("mouseenter", "atlas-discovery-points", () => { map.getCanvas().style.cursor = "pointer"; });
