@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Norway 13-day roadbook · public edition" />
+    <title>挪威 13 天 · Roadbook</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3sC9yJQdF7Yw6YpGf8q5W7Yj2O8cM=" crossorigin="" />
+  </head>
+  <body class="roadbook-page">
+    <div class="grain" aria-hidden="true"></div>
+    <header class="site-nav roadbook-nav">
+      <a class="brand" href="index.html"><span class="brand-mark">←</span><span>返回旅记总览</span></a>
+      <div class="nav-note">NORWAY / REAL VERSION / PLAN A</div>
+    </header>
+
+    <main>
+      <section class="roadbook-hero section-shell">
+        <div class="roadbook-heading reveal">
+          <p class="eyebrow">ROADBOOK / 13 DAYS / 4 PEOPLE</p>
+          <h1>从北极圈出发，<br /><em>穿过山、海与峡湾。</em></h1>
+          <p class="hero-lede">2026.09.24 — 10.06 · 挪威南北自驾 · 轮渡 · 公路 · 自然</p>
+        </div>
+        <div class="route-summary reveal reveal-delay">
+          <div class="route-summary-line"><span class="route-node">OSLO</span><span class="route-dash"></span><span class="route-node active">TROMSØ</span><span class="route-dash"></span><span class="route-node">SENJA</span><span class="route-dash"></span><span class="route-node">LOFOTEN</span></div>
+          <div class="route-summary-line south-line"><span class="route-node">BERGEN</span><span class="route-dash"></span><span class="route-node">FLÅM</span><span class="route-dash"></span><span class="route-node">GEIRANGER</span><span class="route-dash"></span><span class="route-node">STOCKHOLM</span></div>
+          <p>北线 09.24—09.29 / 南线 09.29—10.06</p>
+        </div>
+      </section>
+
+      <section class="map-section section-shell reveal">
+        <div class="section-kicker"><span>ROUTE MAP</span><span class="line"></span><span>PLAN A LOCKED</span></div>
+        <div class="map-shell"><div id="map" aria-label="挪威旅行路线地图"></div><div class="map-overlay"><span class="live-dot"></span><span>DRAG / ZOOM / TAP A STOP</span></div></div>
+        <div class="map-legend"><span><i class="legend-dot north"></i>北线</span><span><i class="legend-dot south"></i>南线</span><span><i class="legend-dot ferry"></i>轮渡 / PLAN A</span></div>
+      </section>
+
+      <section class="day-explorer section-shell reveal">
+        <div class="section-kicker"><span>DAILY CUTS</span><span class="line"></span><span id="day-count">DAY 01 / 13</span></div>
+        <div class="day-layout">
+          <aside class="day-rail" aria-label="拖拽调整行程顺序">
+            <div class="rail-head"><span>拖拽排序</span><span class="mono">LOCAL ONLY</span></div>
+            <div id="day-list" class="day-list"></div>
+          </aside>
+          <article class="day-detail" id="day-detail" aria-live="polite"></article>
+        </div>
+      </section>
+
+      <section class="reminder-section section-shell reveal">
+        <div class="section-kicker"><span>FIELD REMINDERS</span><span class="line"></span><span>CHECK AS YOU GO</span></div>
+        <div id="reminders" class="reminder-grid"></div>
+      </section>
+
+      <section class="public-note section-shell reveal">
+        <p class="eyebrow">PUBLIC EDITION</p>
+        <p>本页面只保留公开路线、地点、交通和旅行提示；预订凭证、个人联系方式和私人文件不进入公开版本。</p>
+      </section>
+    </main>
+
+    <footer class="site-footer"><span>旅记可视化 / NORWAY 2026</span><a href="index.html">回到地球仪 ↗</a></footer>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="data/norway.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

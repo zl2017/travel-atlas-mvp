@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Travel atlas · personal journey visualization" />
+    <title>旅记可视化 · Travel Atlas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="atlas-page">
+    <div class="grain" aria-hidden="true"></div>
+    <header class="site-nav">
+      <a class="brand" href="index.html"><span class="brand-mark">✦</span><span>旅记 / ATLAS</span></a>
+      <div class="nav-note">A living archive of places</div>
+    </header>
+
+    <main>
+      <section class="atlas-hero">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">TRAVEL MEMORY SYSTEM / 001</p>
+          <h1>把走过的地方，<em>留在星球上。</em></h1>
+          <p class="hero-lede">一个可以持续沉淀的旅行入口。点击地球上的目的地，进入对应的路书、路线与现场提醒。</p>
+          <div class="hero-stats">
+            <div><strong>01</strong><span>旅记</span></div>
+            <div><strong>13</strong><span>天</span></div>
+            <div><strong>04</strong><span>同行</span></div>
+          </div>
+        </div>
+
+        <div class="globe-stage reveal reveal-delay" aria-label="可点击的旅行地球仪">
+          <div class="orbit orbit-a"></div>
+          <div class="orbit orbit-b"></div>
+          <div class="globe" role="img" aria-label="标记了挪威和瑞典的地球仪">
+            <span class="continent c-1"></span><span class="continent c-2"></span><span class="continent c-3"></span>
+            <span class="continent c-4"></span><span class="continent c-5"></span><span class="continent c-6"></span>
+            <button class="globe-pin pin-norway" type="button" aria-label="打开挪威 13 天路书" data-go="trip.html">
+              <span class="pin-pulse"></span><span class="pin-dot"></span><span class="pin-label">NORWAY / 01</span>
+            </button>
+            <span class="globe-pin pin-stockholm" aria-label="斯德哥尔摩"><span class="pin-dot pin-dot-muted"></span></span>
+            <span class="globe-pin pin-beijing" aria-label="北京"><span class="pin-dot pin-dot-muted"></span></span>
+            <div class="route-arc arc-north"></div><div class="route-arc arc-south"></div>
+          </div>
+          <p class="globe-caption"><span class="live-dot"></span> 01 active journey · drag to explore</p>
+        </div>
+      </section>
+
+      <section class="journey-index section-shell reveal">
+        <div class="section-kicker"><span>01</span><span>JOURNEYS</span><span class="line"></span><span>2026</span></div>
+        <article class="journey-card" data-go="trip.html" tabindex="0" role="link" aria-label="打开挪威 13 天路书">
+          <div class="journey-card-art"><div class="aurora aurora-one"></div><div class="aurora aurora-two"></div><div class="mountain mountain-one"></div><div class="mountain mountain-two"></div><div class="card-stamp">N<br />69°</div></div>
+          <div class="journey-card-body">
+            <div class="card-topline"><span>09.24 — 10.06 / 2026</span><span class="status-pill">CURRENTLY EDITING</span></div>
+            <h2>北极圈到峡湾深处</h2>
+            <p>特罗姆瑟 · Senja · 罗弗敦 · 卑尔根 · Flåm · Geiranger · Rondane · 斯德哥尔摩</p>
+            <div class="card-footer"><span>打开这次旅程 <span class="arrow">↗</span></span><span>13 DAYS / ROAD + FERRY</span></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="manifesto section-shell reveal">
+        <p class="eyebrow">THE ARCHIVE PRINCIPLE</p>
+        <p>每一次出发，都不只是一次行程。这里留下路线、天气、等待、错过和终于抵达的瞬间。</p>
+      </section>
+    </main>
+
+    <footer class="site-footer"><span>旅记可视化 / PUBLIC EDITION</span><span>made for the road ahead</span></footer>
+    <script src="app.js"></script>
+  </body>
+</html>
