@@ -28,11 +28,10 @@
       zoomDelta: 0.5
     }).setView([48, 55], 2.25);
     L.control.zoom({ position: "bottomright" }).addTo(atlasMap);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
+    L.tileLayer("https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
       maxZoom: 19,
       maxNativeZoom: 18,
       detectRetina: false,
-      subdomains: ["b", "c"],
       updateWhenIdle: true,
       updateWhenZooming: false,
       keepBuffer: 1,
@@ -226,11 +225,10 @@
     if (!mapEl || !window.L) return;
     const map = L.map(mapEl, { zoomControl: false, scrollWheelZoom: true, preferCanvas: true }).setView([63.2, 10.3], 5);
     L.control.zoom({ position: "bottomright" }).addTo(map);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
+    L.tileLayer("https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
       maxZoom: 19,
       maxNativeZoom: 18,
       detectRetina: false,
-      subdomains: ["b", "c"],
       updateWhenIdle: true,
       updateWhenZooming: false,
       keepBuffer: 1,
