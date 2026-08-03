@@ -158,9 +158,9 @@
     window.__tripMap = map; window.__routeLayers = routeLayers; window.__routeMarkers = markers; window.__dayFocus = dayFocus;
     document.querySelectorAll("[data-route-mode]").forEach((button) => button.addEventListener("click", () => setRouteMode(button.dataset.routeMode)));
     document.getElementById("map-reset")?.addEventListener("click", () => setRouteMode(activeRouteMode));
-    setRouteMode("all", false); focusMap(getDay(selectedId));
+    setRouteMode("all", true); focusMap(getDay(selectedId), false);
   }
-  function focusMap(day) {
+  function focusMap(day, shouldFly = true) {
     if (!window.__tripMap || !day.map?.length) return;
     window.__dayFocus?.setLatLngs(day.map);
     const title = document.getElementById("map-focus-title"); const subtitle = document.getElementById("map-focus-subtitle"); const bar = document.getElementById("map-progress-bar");
@@ -168,7 +168,9 @@
     if (subtitle) subtitle.textContent = `${day.date} · ${day.route}`;
     if (bar) bar.style.width = `${Math.max(8, ((trip.days.findIndex((item) => item.id === day.id) + 1) / trip.days.length) * 100)}%`;
     renderRouteInspector(activeRouteMode);
-    window.__tripMap.flyToBounds(L.latLngBounds(day.map), { padding: [70, 70], duration: 0.7, maxZoom: day.map.length === 1 ? 8 : 10 });
+    if (shouldFly) {
+      window.__tripMap.flyToBounds(L.latLngBounds(day.map), { padding: [70, 70], duration: 0.7, maxZoom: day.map.length === 1 ? 8 : 10 });
+    }
   }
 
   renderDayList(); renderDayDetail(); renderReminders(); initMap();
