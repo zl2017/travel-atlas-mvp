@@ -43,7 +43,7 @@
       { lat: 59.3293, lon: 18.0686, label: "Stockholm", meta: "SWEDEN / CITY", accent: "south", href: "trip.html" },
       { lat: 39.9042, lon: 116.4074, label: "北京", meta: "HOME BASE", accent: "home" }
     ];
-    atlasMap.on("load", () => {
+    afterMapStyleReady(atlasMap, () => {
       addRouteSource(atlasMap, "atlas-north", trip.route.north, "#ff7d57");
       addRouteSource(atlasMap, "atlas-south", trip.route.south, "#2d9b86");
       places.forEach((place, index) => {
@@ -70,6 +70,19 @@
 
   function toLineString(coordinates) {
     return { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: coordinates.map(([lat, lon]) => [Number(lon), Number(lat)]) } };
+  }
+
+  function afterMapStyleReady(map, callback) {
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      callback();
+    };
+    map.once("style.load", start);
+    map.once("load", start);
+    if (map.isStyleLoaded?.()) queueMicrotask(start);
+    window.setTimeout(() => map.isStyleLoaded?.() && start(), 3500);
   }
 
   function addRouteSource(map, id, coordinates, color) {
@@ -241,7 +254,7 @@
       attributionControl: true
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
-    map.on("load", () => {
+    afterMapStyleReady(map, () => {
       const routeLayers = {};
       ["north", "south"].forEach((key) => {
         const sourceId = `route-${key}`;
