@@ -45,13 +45,15 @@
 
 ## GitHub Pages 发布
 
-- [ ] GitHub CLI 重新认证成功
-- [ ] 创建独立公开仓库
-- [ ] 只推送公开页面文件
-- [ ] 不推送原始 PDF、Obsidian 私人笔记、预订凭证和个人信息
-- [ ] 推送 `index.html`、`trip.html`、`data/`、`styles.css`、`app.js`
-- [ ] 开启 GitHub Pages
-- [ ] 用 GitHub Pages URL 验证手机和电脑访问
+- [x] GitHub CLI 重新认证成功，并补充 `workflow` 权限
+- [x] 创建独立公开仓库：`https://github.com/zl2017/travel-atlas-mvp`
+- [x] 只推送公开页面文件
+- [x] 不推送原始 PDF、Obsidian 私人笔记、预订凭证和个人信息
+- [x] 推送 `index.html`、`trip.html`、`data/`、`styles.css`、`app.js`
+- [x] 开启 GitHub Pages，并使用 Actions 自动发布
+- [x] 公开首页访问验证通过
+- [x] 公开路书页验证通过：13 天、地图、Plan A、6 条提醒
+- [x] GitHub Pages URL：`https://zl2017.github.io/travel-atlas-mvp/`
 
 ## 下一版增强
 
