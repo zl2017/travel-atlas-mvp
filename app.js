@@ -16,29 +16,25 @@
   function initAtlasMap() {
     const atlasEl = document.getElementById("atlas-map");
     const trip = window.NORWAY_TRIP;
-    if (!atlasEl || !window.L || !trip) return;
+    if (!atlasEl || !window.maplibregl || !trip) return;
     const frame = atlasEl.closest(".globe-map-frame");
     const ring = document.querySelector(".globe-map-ring");
-    const atlasMap = L.map(atlasEl, {
-      zoomControl: false,
-      scrollWheelZoom: true,
-      worldCopyJump: true,
-      preferCanvas: true,
-      zoomSnap: 0.5,
-      zoomDelta: 0.5
-    }).setView([48, 55], 2.25);
-    L.control.zoom({ position: "bottomright" }).addTo(atlasMap);
-    L.tileLayer("https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      maxNativeZoom: 18,
-      detectRetina: false,
-      updateWhenIdle: true,
-      updateWhenZooming: false,
-      keepBuffer: 1,
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO Voyager'
-    }).addTo(atlasMap);
+    const atlasMap = new maplibregl.Map({
+      container: atlasEl,
+      style: "https://tiles.openfreemap.org/styles/liberty",
+      center: [55, 48],
+      zoom: 2.25,
+      bearing: -12,
+      pitch: 12,
+      projection: { type: "globe" },
+      dragRotate: true,
+      pitchWithRotate: true,
+      maxPitch: 58,
+      attributionControl: true
+    });
+    atlasMap.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
 
-    [
+    const places = [
       { lat: 69.6492, lon: 18.9553, label: "Tromsø", meta: "NORWAY / NORTH", accent: "north", href: "trip.html" },
       { lat: 69.4141, lon: 17.6639, label: "Senja", meta: "NORWAY / NORTH", accent: "north", href: "trip.html" },
       { lat: 67.9330, lon: 13.0680, label: "Reine", meta: "NORWAY / LOFOTEN", accent: "north", href: "trip.html" },
@@ -46,29 +42,40 @@
       { lat: 62.1010, lon: 7.2050, label: "Geiranger", meta: "NORWAY / FJORDS", accent: "south", href: "trip.html" },
       { lat: 59.3293, lon: 18.0686, label: "Stockholm", meta: "SWEDEN / CITY", accent: "south", href: "trip.html" },
       { lat: 39.9042, lon: 116.4074, label: "北京", meta: "HOME BASE", accent: "home" }
-    ].forEach((place, index) => {
-      const icon = L.divIcon({
-        className: "atlas-marker-wrap",
-        html: `<span class="atlas-marker atlas-marker-${place.accent}"><b>${String(index + 1).padStart(2, "0")}</b><i></i></span>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
+    ];
+    atlasMap.on("load", () => {
+      addRouteSource(atlasMap, "atlas-north", trip.route.north, "#ff7d57");
+      addRouteSource(atlasMap, "atlas-south", trip.route.south, "#2d9b86");
+      places.forEach((place, index) => {
+        const element = document.createElement("button");
+        element.type = "button";
+        element.className = `atlas-marker atlas-marker-${place.accent}`;
+        element.setAttribute("aria-label", `${place.label} / ${place.meta}`);
+        element.innerHTML = `<b>${String(index + 1).padStart(2, "0")}</b><i></i>`;
+        const action = place.href ? `<a class="atlas-popup-link" href="${place.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
+        const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([place.lon, place.lat]).setPopup(new maplibregl.Popup({ offset: 16, closeButton: true }).setHTML(`<span class="atlas-popup-meta">${place.meta}</span><strong>${place.label}</strong>${action}`)).addTo(atlasMap);
+        marker.getElement().addEventListener("click", () => atlasMap.flyTo({ center: [place.lon, place.lat], zoom: 5.5, duration: 500 }));
       });
-      const action = place.href ? `<a class="atlas-popup-link" href="${place.href}">打开这次路书 ↗</a>` : `<span class="atlas-popup-note">HOME BASE / ARCHIVE SOON</span>`;
-      const marker = L.marker([place.lat, place.lon], { icon, keyboard: true }).addTo(atlasMap);
-      marker.bindPopup(`<span class="atlas-popup-meta">${place.meta}</span><strong>${place.label}</strong>${action}`);
-      marker.on("click", () => atlasMap.flyTo([place.lat, place.lon], 5.5, { duration: 0.45 }));
     });
-
-    L.polyline(trip.route.north, { color: "#ff7d57", weight: 3, opacity: 0.9, dashArray: "3 9", className: "atlas-route-line", lineCap: "round", lineJoin: "round" }).addTo(atlasMap);
-    L.polyline(trip.route.south, { color: "#2d9b86", weight: 3, opacity: 0.9, dashArray: "3 9", className: "atlas-route-line", lineCap: "round", lineJoin: "round" }).addTo(atlasMap);
-
     atlasMap.on("dragstart", () => frame?.classList.add("is-dragging"));
     atlasMap.on("drag", () => {
       const longitude = atlasMap.getCenter().lng;
       ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
     });
     atlasMap.on("dragend", () => frame?.classList.remove("is-dragging"));
+    atlasMap.on("rotatestart", () => frame?.classList.add("is-dragging"));
+    atlasMap.on("rotateend", () => frame?.classList.remove("is-dragging"));
     window.__atlasMap = atlasMap;
+  }
+
+  function toLineString(coordinates) {
+    return { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: coordinates.map(([lat, lon]) => [Number(lon), Number(lat)]) } };
+  }
+
+  function addRouteSource(map, id, coordinates, color) {
+    map.addSource(id, { type: "geojson", data: toLineString(coordinates) });
+    map.addLayer({ id: `${id}-glow`, type: "line", source: id, paint: { "line-color": color, "line-width": 13, "line-opacity": 0.14, "line-blur": 5 } });
+    map.addLayer({ id: `${id}-line`, type: "line", source: id, paint: { "line-color": color, "line-width": 3, "line-opacity": 0.94, "line-dasharray": [1, 2] } });
   }
 
   initAtlasMap();
@@ -210,68 +217,91 @@
     if (label) label.textContent = config.code;
     Object.entries(window.__routeLayers || {}).forEach(([key, layers]) => {
       const visible = mode === "all" || mode === key;
-      layers.forEach((layer) => layer.setStyle({ opacity: visible ? layer.options.baseOpacity : 0, weight: visible ? layer.options.baseWeight : 0 }));
+      layers.forEach((layerId) => window.__tripMap?.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none"));
     });
-    (window.__routeMarkers || []).forEach(({ marker, place }) => marker.setOpacity(mode === "all" || mode === place.zone ? 1 : 0.22));
-    (window.__waypointMarkers || []).forEach(({ marker, place }) => marker.setOpacity(mode === "all" || mode === place.zone ? 0.92 : 0.18));
+    (window.__routeMarkers || []).forEach(({ marker, place }) => { marker.getElement().style.opacity = mode === "all" || mode === place.zone ? "1" : "0.22"; });
+    (window.__waypointMarkers || []).forEach(({ marker, place }) => { marker.getElement().style.opacity = mode === "all" || mode === place.zone ? "0.92" : "0.18"; });
     renderRouteInspector(mode);
     if (shouldFit && window.__tripMap) {
       const coordinates = mode === "all" ? trip.route.north.concat(trip.route.south) : trip.route[mode];
-      window.__tripMap.flyToBounds(L.latLngBounds(coordinates), { padding: [42, 42], duration: 0.75, maxZoom: 7 });
+      fitMapCoordinates(window.__tripMap, coordinates, 42, 7);
     }
   }
 
   function initMap() {
-    if (!mapEl || !window.L) return;
-    const map = L.map(mapEl, { zoomControl: false, scrollWheelZoom: true, preferCanvas: true }).setView([63.2, 10.3], 5);
-    L.control.zoom({ position: "bottomright" }).addTo(map);
-    L.tileLayer("https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      maxNativeZoom: 18,
-      detectRetina: false,
-      updateWhenIdle: true,
-      updateWhenZooming: false,
-      keepBuffer: 1,
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO Voyager'
-    }).addTo(map);
-    const routeLayers = {};
-    ["north", "south"].forEach((key) => {
-      const color = key === "north" ? "#ff7d57" : "#b5e6d5";
-      const glow = L.polyline(trip.route[key], { color, weight: 16, opacity: 0.13, baseOpacity: 0.13, baseWeight: 16, lineCap: "round", lineJoin: "round" }).addTo(map);
-      const line = L.polyline(trip.route[key], { color, weight: 4, opacity: 0.94, baseOpacity: 0.94, baseWeight: 4, className: "route-line-animated", lineCap: "round", lineJoin: "round" }).addTo(map);
-      routeLayers[key] = [glow, line];
+    if (!mapEl || !window.maplibregl) return;
+    const map = new maplibregl.Map({
+      container: mapEl,
+      style: "https://tiles.openfreemap.org/styles/liberty",
+      center: [10.3, 63.2],
+      zoom: 5,
+      dragRotate: true,
+      pitchWithRotate: true,
+      maxPitch: 58,
+      attributionControl: true
     });
-    const markers = placeCatalog.map((place, index) => {
-      const icon = L.divIcon({ className: "route-marker-wrap", html: `<span class="route-marker marker-${place.zone}"><b>${String(index + 1).padStart(2, "0")}</b><i>${iconFor(place.kind)}</i></span>`, iconSize: [38, 38], iconAnchor: [19, 19] });
-      const marker = L.marker([place.lat, place.lon], { icon, keyboard: true }).addTo(map).bindPopup(`<strong>${place.label}</strong><br><span>${place.note}</span>`);
-      marker.on("click", () => selectDay(place.dayId));
-      return { marker, place };
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
+    map.on("load", () => {
+      const routeLayers = {};
+      ["north", "south"].forEach((key) => {
+        const sourceId = `route-${key}`;
+        addRouteSource(map, sourceId, trip.route[key], key === "north" ? "#ff7d57" : "#b5e6d5");
+        routeLayers[key] = [`${sourceId}-glow`, `${sourceId}-line`];
+      });
+      const markers = placeCatalog.map((place, index) => {
+        const element = document.createElement("button");
+        element.type = "button";
+        element.className = `route-marker marker-${place.zone}`;
+        element.setAttribute("aria-label", place.label);
+        element.innerHTML = `<b>${String(index + 1).padStart(2, "0")}</b><i>${iconFor(place.kind)}</i>`;
+        const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([place.lon, place.lat]).setPopup(new maplibregl.Popup({ offset: 18 }).setHTML(`<strong>${place.label}</strong><br><span>${place.note}</span>`)).addTo(map);
+        marker.getElement().addEventListener("click", () => selectDay(place.dayId));
+        return { marker, place };
+      });
+      const waypointMarkers = secondaryWaypoints.map((place) => {
+        const element = document.createElement("button");
+        element.type = "button";
+        element.className = `route-waypoint marker-${place.zone}`;
+        element.setAttribute("aria-label", place.label);
+        element.innerHTML = "<i></i>";
+        const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([place.lon, place.lat]).setPopup(new maplibregl.Popup({ offset: 12 }).setHTML(`<strong>${place.label}</strong><br><span>${place.note}</span>`)).addTo(map);
+        marker.getElement().addEventListener("click", () => selectDay(place.dayId));
+        return { marker, place };
+      });
+      map.addSource("day-focus", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+      map.addLayer({ id: "day-focus-line", type: "line", source: "day-focus", paint: { "line-color": "#ffcf6e", "line-width": 3, "line-opacity": 1, "line-dasharray": [1, 2] } });
+      const stopCount = document.getElementById("map-stop-count");
+      if (stopCount) stopCount.textContent = String(waypointCatalog.length);
+      window.__tripMap = map; window.__routeLayers = routeLayers; window.__routeMarkers = markers; window.__waypointMarkers = waypointMarkers;
+      document.querySelectorAll("[data-route-mode]").forEach((button) => button.addEventListener("click", () => setRouteMode(button.dataset.routeMode)));
+      document.getElementById("map-reset")?.addEventListener("click", () => setRouteMode(activeRouteMode));
+      setRouteMode("all", true); focusMap(getDay(selectedId), false);
+      mapEl.setAttribute("aria-busy", "false");
     });
-    const waypointMarkers = secondaryWaypoints.map((place) => {
-      const icon = L.divIcon({ className: "route-waypoint-wrap", html: `<span class="route-waypoint marker-${place.zone}"><i></i></span>`, iconSize: [18, 18], iconAnchor: [9, 9] });
-      const marker = L.marker([place.lat, place.lon], { icon, keyboard: true }).addTo(map).bindPopup(`<strong>${place.label}</strong><br><span>${place.note}</span>`);
-      marker.on("click", () => selectDay(place.dayId));
-      return { marker, place };
-    });
-    const dayFocus = L.polyline([], { color: "#ffcf6e", weight: 3, opacity: 1, dashArray: "5 10", className: "day-focus-line", lineCap: "round" }).addTo(map);
-    const stopCount = document.getElementById("map-stop-count");
-    if (stopCount) stopCount.textContent = String(waypointCatalog.length);
-    window.__tripMap = map; window.__routeLayers = routeLayers; window.__routeMarkers = markers; window.__waypointMarkers = waypointMarkers; window.__dayFocus = dayFocus;
-    document.querySelectorAll("[data-route-mode]").forEach((button) => button.addEventListener("click", () => setRouteMode(button.dataset.routeMode)));
-    document.getElementById("map-reset")?.addEventListener("click", () => setRouteMode(activeRouteMode));
-    setRouteMode("all", true); focusMap(getDay(selectedId), false);
-    mapEl.setAttribute("aria-busy", "false");
   }
+
+  function fitMapCoordinates(map, coordinates, padding, maxZoom) {
+    if (!coordinates?.length) return;
+    if (coordinates.length === 1) {
+      map.flyTo({ center: [Number(coordinates[0][1]), Number(coordinates[0][0])], zoom: maxZoom, duration: 700 });
+      return;
+    }
+    const bounds = new maplibregl.LngLatBounds();
+    coordinates.forEach(([lat, lon]) => bounds.extend([Number(lon), Number(lat)]));
+    map.fitBounds(bounds, { padding, maxZoom, duration: 700 });
+  }
+
   function focusMap(day, shouldFly = true) {
     if (!window.__tripMap || !day.map?.length) return;
-    window.__dayFocus?.setLatLngs(day.map);
+    const dayFocus = window.__tripMap.getSource("day-focus");
+    if (dayFocus) dayFocus.setData(toLineString(day.map));
     const title = document.getElementById("map-focus-title"); const subtitle = document.getElementById("map-focus-subtitle"); const bar = document.getElementById("map-progress-bar");
     if (title) title.textContent = day.title;
     if (subtitle) subtitle.textContent = `${day.date} · ${day.route}`;
     if (bar) bar.style.width = `${Math.max(8, ((trip.days.findIndex((item) => item.id === day.id) + 1) / trip.days.length) * 100)}%`;
     renderRouteInspector(activeRouteMode);
     if (shouldFly) {
-      window.__tripMap.flyToBounds(L.latLngBounds(day.map), { padding: [70, 70], duration: 0.7, maxZoom: day.map.length === 1 ? 8 : 10 });
+      fitMapCoordinates(window.__tripMap, day.map, 70, day.map.length === 1 ? 8 : 10);
     }
   }
 

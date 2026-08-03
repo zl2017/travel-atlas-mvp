@@ -27,7 +27,7 @@ python3 -m http.server 4173
 
 然后打开 `http://localhost:4173/`。
 
-地图使用 Leaflet 加载免费的 CARTO Voyager / OpenStreetMap 底图，不需要 Google、高德或百度的 API Key。地图会在接近视口时再初始化，并在缩放结束后更新瓦片，以减少首屏等待和拖拽时的重复请求。
+地图使用 MapLibre GL JS 加载免费的 OpenFreeMap / OpenStreetMap 矢量底图，不需要 Google、高德或百度的 API Key。地图文字和图层会随缩放层级自动更新，首页使用 globe 投影并支持拖拽旋转，路书页使用可旋转的矢量地图。
 
 ## GitHub Pages
 
