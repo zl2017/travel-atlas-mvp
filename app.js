@@ -22,8 +22,8 @@
     const atlasMap = new maplibregl.Map({
       container: atlasEl,
       style: "https://tiles.openfreemap.org/styles/liberty",
-      center: [55, 48],
-      zoom: 2.25,
+      center: [60, 44],
+      zoom: 1.65,
       bearing: -12,
       pitch: 12,
       projection: { type: "globe" },
@@ -74,8 +74,8 @@
 
   function addRouteSource(map, id, coordinates, color) {
     map.addSource(id, { type: "geojson", data: toLineString(coordinates) });
-    map.addLayer({ id: `${id}-glow`, type: "line", source: id, paint: { "line-color": color, "line-width": 13, "line-opacity": 0.14, "line-blur": 5 } });
-    map.addLayer({ id: `${id}-line`, type: "line", source: id, paint: { "line-color": color, "line-width": 3, "line-opacity": 0.94, "line-dasharray": [1, 2] } });
+    map.addLayer({ id: `${id}-glow`, type: "line", source: id, paint: { "line-color": color, "line-width": 16, "line-opacity": 0.18, "line-blur": 5 } });
+    map.addLayer({ id: `${id}-line`, type: "line", source: id, paint: { "line-color": color, "line-width": 4, "line-opacity": 0.96, "line-dasharray": [2, 1] } });
   }
 
   initAtlasMap();
