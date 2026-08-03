@@ -18,6 +18,7 @@
     const trip = window.NORWAY_TRIP;
     if (!atlasEl || !window.maplibregl || !trip) return;
     const frame = atlasEl.closest(".globe-map-frame");
+    const gimbal = frame?.closest(".globe-gimbal");
     const ring = document.querySelector(".globe-map-ring");
     const initialView = { center: [60, 44], zoom: 1.25, bearing: -12, pitch: 8 };
     const atlasMap = new maplibregl.Map({
@@ -35,7 +36,7 @@
       attributionControl: true
     });
     atlasMap.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
-    installGlobeDrag(atlasMap, atlasEl, frame, ring);
+    installGlobeDrag(atlasMap, atlasEl, frame, ring, gimbal);
 
     const places = [
       { lat: 69.6492, lon: 18.9553, label: "Tromsø", meta: "NORWAY / NORTH", accent: "north", href: "trip.html" },
@@ -58,6 +59,8 @@
     atlasMap.on("drag", () => {
       const longitude = atlasMap.getCenter().lng;
       ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
+      gimbal?.style.setProperty("--axis-turn", `${longitude / 10}deg`);
+      gimbal?.style.setProperty("--axis-tilt", `${(atlasMap.getPitch() - initialView.pitch) * 0.5}deg`);
     });
     atlasMap.on("dragend", () => frame?.classList.remove("is-dragging"));
     atlasMap.on("rotatestart", () => frame?.classList.add("is-dragging"));
@@ -66,11 +69,13 @@
       if (event.target.closest("#atlas-map, a, button, input, textarea, select, [data-go], .journey-card, .maplibregl-popup, .maplibregl-ctrl")) return;
       atlasMap.easeTo({ ...initialView, duration: 900, essential: true });
       ring?.style.setProperty("--atlas-turn", `${initialView.bearing}deg`);
+      gimbal?.style.setProperty("--axis-turn", `${initialView.bearing}deg`);
+      gimbal?.style.setProperty("--axis-tilt", "0deg");
     });
     window.__atlasMap = atlasMap;
   }
 
-  function installGlobeDrag(map, element, frame, ring) {
+  function installGlobeDrag(map, element, frame, ring, gimbal) {
     let gesture = null;
     const stop = (event) => {
       if (!gesture) return;
@@ -95,6 +100,8 @@
       const pitch = Math.max(0, Math.min(44, gesture.pitch - dy * 0.06));
       map.jumpTo({ center: [longitude, latitude], bearing: gesture.bearing + dx * 0.08, pitch });
       ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
+      gimbal?.style.setProperty("--axis-turn", `${longitude / 10}deg`);
+      gimbal?.style.setProperty("--axis-tilt", `${(pitch - 8) * 0.5}deg`);
       event.preventDefault();
     }, { passive: false });
     element.addEventListener("pointerup", stop);
