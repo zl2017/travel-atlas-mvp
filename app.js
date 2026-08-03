@@ -44,6 +44,7 @@
       { lat: 39.9042, lon: 116.4074, label: "北京", meta: "HOME BASE", accent: "home" }
     ];
     afterMapStyleReady(atlasMap, () => {
+      addRasterFallback(atlasMap);
       addRouteSource(atlasMap, "atlas-north", trip.route.north, "#ff7d57");
       addRouteSource(atlasMap, "atlas-south", trip.route.south, "#2d9b86");
       places.forEach((place, index) => {
@@ -83,6 +84,20 @@
     map.once("load", start);
     if (map.isStyleLoaded?.()) queueMicrotask(start);
     window.setTimeout(() => map.isStyleLoaded?.() && start(), 3500);
+  }
+
+  function addRasterFallback(map) {
+    const sourceId = "atlas-osm-raster-fallback";
+    if (map.getSource(sourceId)) return;
+    map.addSource(sourceId, {
+      type: "raster",
+      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: "© OpenStreetMap contributors"
+    });
+    const firstContentLayer = map.getStyle().layers?.find((layer) => layer.type !== "background");
+    map.addLayer({ id: "atlas-osm-raster-fallback", type: "raster", source: sourceId, paint: { "raster-opacity": 1 } }, firstContentLayer?.id);
   }
 
   function addRouteSource(map, id, coordinates, color) {
@@ -255,6 +270,7 @@
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
     afterMapStyleReady(map, () => {
+      addRasterFallback(map);
       const routeLayers = {};
       ["north", "south"].forEach((key) => {
         const sourceId = `route-${key}`;
