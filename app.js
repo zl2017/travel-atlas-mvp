@@ -28,10 +28,11 @@
       zoomDelta: 0.5
     }).setView([48, 55], 2.25);
     L.control.zoom({ position: "bottomright" }).addTo(atlasMap);
-    L.tileLayer("https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
       maxZoom: 19,
       maxNativeZoom: 18,
       detectRetina: false,
+      subdomains: ["b", "c"],
       updateWhenIdle: true,
       updateWhenZooming: false,
       keepBuffer: 1,
@@ -80,6 +81,7 @@
   const dayDetail = document.getElementById("day-detail");
   const dayCount = document.getElementById("day-count");
   const reminders = document.getElementById("reminders");
+  if (!mapEl || !dayList || !dayDetail || !dayCount || !reminders) return;
   let selectedId = localStorage.getItem("norway-selected-day") || trip.days[0].id;
   let order = JSON.parse(localStorage.getItem("norway-day-order") || "null") || trip.days.map((day) => day.id);
 
@@ -224,10 +226,11 @@
     if (!mapEl || !window.L) return;
     const map = L.map(mapEl, { zoomControl: false, scrollWheelZoom: true, preferCanvas: true }).setView([63.2, 10.3], 5);
     L.control.zoom({ position: "bottomright" }).addTo(map);
-    L.tileLayer("https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
       maxZoom: 19,
       maxNativeZoom: 18,
       detectRetina: false,
+      subdomains: ["b", "c"],
       updateWhenIdle: true,
       updateWhenZooming: false,
       keepBuffer: 1,
