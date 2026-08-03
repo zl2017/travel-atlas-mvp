@@ -34,6 +34,15 @@
 - [x] 页面包含滚动进入动画、地球仪浮动、路线视觉层和毛玻璃/梦幻视觉
 - [x] 提供公开版边界说明
 
+## 产品与本地验收
+
+- [x] 产品定位、用户流程和 MVP 验收文档：`docs/product-brief.md`
+- [x] 页面结构、交互和发布方式文档：`docs/mvp-scope.md`
+- [x] 内容来源与隐私边界文档：`docs/content-and-privacy.md`
+- [x] JavaScript 语法检查通过
+- [x] 本地浏览器验证 13 天内容、Plan A、地图和提醒交互
+- [x] 代码路径为纯英文：`travel-atlas-mvp`
+
 ## GitHub Pages 发布
 
 - [ ] GitHub CLI 重新认证成功
