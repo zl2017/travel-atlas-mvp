@@ -33,9 +33,41 @@
       </section>
 
       <section class="map-section section-shell reveal">
-        <div class="section-kicker"><span>ROUTE MAP</span><span class="line"></span><span>PLAN A LOCKED</span></div>
-        <div class="map-shell"><div id="map" aria-label="挪威旅行路线地图"></div><div class="map-overlay"><span class="live-dot"></span><span>DRAG / ZOOM / TAP A STOP</span></div></div>
-        <div class="map-legend"><span><i class="legend-dot north"></i>北线</span><span><i class="legend-dot south"></i>南线</span><span><i class="legend-dot ferry"></i>轮渡 / PLAN A</span></div>
+        <div class="section-kicker"><span>ROUTE MAP / V2</span><span class="line"></span><span>PLAN A LOCKED</span></div>
+        <div class="map-intro">
+          <div>
+            <p class="eyebrow">A MOVING MAP</p>
+            <h2>让路线成为故事的骨架。</h2>
+            <p>切换北线、南线或全程；点击站点，地图会回到当天的路上。</p>
+          </div>
+          <div class="map-stats" aria-label="路线统计"><span><strong id="map-stop-count">12</strong><small>STOPS</small></span><span><strong>02</strong><small>ROUTES</small></span><span><strong>01</strong><small>FERRY PLAN</small></span></div>
+        </div>
+        <div class="map-stage">
+          <div class="map-panel">
+            <div class="map-toolbar">
+              <div class="map-tabs" role="tablist" aria-label="路线筛选">
+                <button class="map-tab is-active" type="button" data-route-mode="all" role="tab" aria-selected="true">全程</button>
+                <button class="map-tab" type="button" data-route-mode="north" role="tab" aria-selected="false">北线 / 极光</button>
+                <button class="map-tab" type="button" data-route-mode="south" role="tab" aria-selected="false">南线 / 峡湾</button>
+              </div>
+              <div class="map-toolbar-note"><span id="map-route-label">NORTH + SOUTH</span><span>OPEN MAP</span></div>
+            </div>
+            <div class="map-shell">
+              <div id="map" aria-label="挪威旅行路线地图"></div>
+              <div class="map-overlay"><span class="live-dot"></span><span>DRAG / ZOOM / TAP A STOP</span></div>
+              <div class="map-hud"><span class="field-label">CURRENT CUT</span><strong id="map-focus-title">全程路线</strong><small id="map-focus-subtitle">12 stops · 13 days · road + ferry</small></div>
+              <button class="map-reset" id="map-reset" type="button">重置视角 ↺</button>
+              <div class="map-progress" aria-hidden="true"><span id="map-progress-bar"></span></div>
+            </div>
+            <div class="map-legend"><span><i class="legend-dot north"></i>北线 · coral</span><span><i class="legend-dot south"></i>南线 · mint</span><span><i class="legend-dot ferry"></i>轮渡 · yellow</span><span class="map-legend-note">底图：OpenStreetMap / CARTO</span></div>
+          </div>
+          <aside class="route-inspector" aria-label="路线站点检查面板">
+            <div class="inspector-head"><span class="field-label">ROUTE CUT</span><span class="mono">CLICK A STOP</span></div>
+            <h3 id="route-inspector-title">全程路线</h3>
+            <p id="route-inspector-copy">从北极圈到峡湾，再沿公路回到城市。</p>
+            <div id="route-stop-list" class="route-stop-list"></div>
+          </aside>
+        </div>
       </section>
 
       <section class="day-explorer section-shell reveal">

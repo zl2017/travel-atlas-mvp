@@ -10,6 +10,7 @@
 - `docs/product-brief.md`：产品定位、用户流程和 MVP 验收标准
 - `docs/mvp-scope.md`：页面结构、交互和发布方式
 - `docs/content-and-privacy.md`：内容来源与脱敏边界
+- `docs/v2-design-references.md`：V2 设计参考与地图改造记录
 - `outputs/checklist.md`：范围、验收与发布清单
 
 ## 隐私边界
