@@ -19,13 +19,11 @@
     if (!atlasEl || !window.maplibregl || !trip) return;
     const frame = atlasEl.closest(".globe-map-frame");
     const ring = document.querySelector(".globe-map-ring");
+    const initialView = { center: [60, 44], zoom: 1.25, bearing: -12, pitch: 8 };
     const atlasMap = new maplibregl.Map({
       container: atlasEl,
       style: "https://tiles.openfreemap.org/styles/liberty",
-      center: [60, 44],
-      zoom: 1.25,
-      bearing: -12,
-      pitch: 8,
+      ...initialView,
       projection: { type: "globe" },
       dragPan: false,
       dragRotate: false,
@@ -64,6 +62,11 @@
     atlasMap.on("dragend", () => frame?.classList.remove("is-dragging"));
     atlasMap.on("rotatestart", () => frame?.classList.add("is-dragging"));
     atlasMap.on("rotateend", () => frame?.classList.remove("is-dragging"));
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("#atlas-map, a, button, input, textarea, select, [data-go], .journey-card, .maplibregl-popup, .maplibregl-ctrl")) return;
+      atlasMap.easeTo({ ...initialView, duration: 900, essential: true });
+      ring?.style.setProperty("--atlas-turn", `${initialView.bearing}deg`);
+    });
     window.__atlasMap = atlasMap;
   }
 
