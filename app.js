@@ -21,6 +21,12 @@
     const gimbal = frame?.closest(".globe-gimbal");
     const ring = document.querySelector(".globe-map-ring");
     const initialView = { center: [60, 44], zoom: 1.25, bearing: -12, pitch: 8 };
+    const normalizeAngle = (angle) => {
+      let value = angle;
+      while (value > 180) value -= 360;
+      while (value < -180) value += 360;
+      return value;
+    };
     const atlasMap = new maplibregl.Map({
       container: atlasEl,
       style: "https://tiles.openfreemap.org/styles/liberty",
@@ -29,12 +35,13 @@
       dragPan: false,
       dragRotate: false,
       touchZoomRotate: true,
-      touchPitch: true,
-      pitchWithRotate: true,
+      touchPitch: false,
+      pitchWithRotate: false,
       maxPitch: 58,
       maxZoom: 3.7,
       attributionControl: true
     });
+    atlasMap.touchZoomRotate?.disableRotation?.();
     atlasMap.addControl(new maplibregl.NavigationControl({ showCompass: true }), "bottom-right");
     installGlobeDrag(atlasMap, atlasEl, frame, ring, gimbal);
 
@@ -56,11 +63,9 @@
       addAtlasPlaceLayers(atlasMap, places);
     });
     atlasMap.on("dragstart", () => frame?.classList.add("is-dragging"));
-    atlasMap.on("drag", () => {
+    atlasMap.on("move", () => {
       const longitude = atlasMap.getCenter().lng;
-      ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
-      gimbal?.style.setProperty("--axis-turn", `${longitude / 10}deg`);
-      gimbal?.style.setProperty("--axis-tilt", `${(atlasMap.getPitch() - initialView.pitch) * 0.5}deg`);
+      gimbal?.style.setProperty("--axis-turn", `${normalizeAngle(longitude - initialView.center[0])}deg`);
     });
     atlasMap.on("dragend", () => frame?.classList.remove("is-dragging"));
     atlasMap.on("rotatestart", () => frame?.classList.add("is-dragging"));
@@ -69,8 +74,7 @@
       if (event.target.closest("#atlas-map, a, button, input, textarea, select, [data-go], .journey-card, .maplibregl-popup, .maplibregl-ctrl")) return;
       atlasMap.easeTo({ ...initialView, duration: 900, essential: true });
       ring?.style.setProperty("--atlas-turn", `${initialView.bearing}deg`);
-      gimbal?.style.setProperty("--axis-turn", `${initialView.bearing}deg`);
-      gimbal?.style.setProperty("--axis-tilt", "0deg");
+      gimbal?.style.setProperty("--axis-turn", "0deg");
     });
     window.__atlasMap = atlasMap;
   }
@@ -97,10 +101,7 @@
       const dy = event.clientY - gesture.y;
       const longitude = ((gesture.center.lng - dx * 0.22 + 540) % 360) - 180;
       const pitch = Math.max(0, Math.min(44, gesture.pitch - dy * 0.06));
-      map.jumpTo({ center: [longitude, gesture.center.lat], bearing: gesture.bearing + dx * 0.08, pitch });
-      ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
-      gimbal?.style.setProperty("--axis-turn", `${longitude / 10}deg`);
-      gimbal?.style.setProperty("--axis-tilt", `${(pitch - 8) * 0.5}deg`);
+      map.jumpTo({ center: [longitude, gesture.center.lat], bearing: gesture.bearing, pitch });
       event.preventDefault();
     }, { passive: false });
     element.addEventListener("pointerup", stop);
