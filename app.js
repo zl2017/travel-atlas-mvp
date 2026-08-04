@@ -20,7 +20,7 @@
     const frame = atlasEl.closest(".globe-map-frame");
     const gimbal = frame?.closest(".globe-gimbal");
     const ring = document.querySelector(".globe-map-ring");
-    const initialView = { center: [60, 44], zoom: 1.25, bearing: -12, pitch: 8 };
+    const initialView = { center: [60, 20], zoom: 1.25, bearing: -12, pitch: 8 };
     const normalizeAngle = (angle) => {
       let value = angle;
       while (value > 180) value -= 360;
@@ -100,8 +100,8 @@
       const dx = event.clientX - gesture.x;
       const dy = event.clientY - gesture.y;
       const longitude = ((gesture.center.lng - dx * 0.22 + 540) % 360) - 180;
-      const pitch = Math.max(0, Math.min(44, gesture.pitch - dy * 0.06));
-      map.jumpTo({ center: [longitude, gesture.center.lat], bearing: gesture.bearing, pitch });
+      const latitude = Math.max(-78, Math.min(78, gesture.center.lat + dy * 0.32));
+      map.jumpTo({ center: [longitude, latitude], bearing: gesture.bearing, pitch: gesture.pitch });
       event.preventDefault();
     }, { passive: false });
     element.addEventListener("pointerup", stop);
