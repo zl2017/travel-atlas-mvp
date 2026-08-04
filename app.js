@@ -96,9 +96,8 @@
       const dx = event.clientX - gesture.x;
       const dy = event.clientY - gesture.y;
       const longitude = ((gesture.center.lng - dx * 0.22 + 540) % 360) - 180;
-      const latitude = Math.max(-78, Math.min(78, gesture.center.lat + dy * 0.12));
       const pitch = Math.max(0, Math.min(44, gesture.pitch - dy * 0.06));
-      map.jumpTo({ center: [longitude, latitude], bearing: gesture.bearing + dx * 0.08, pitch });
+      map.jumpTo({ center: [longitude, gesture.center.lat], bearing: gesture.bearing + dx * 0.08, pitch });
       ring?.style.setProperty("--atlas-turn", `${longitude / 10}deg`);
       gimbal?.style.setProperty("--axis-turn", `${longitude / 10}deg`);
       gimbal?.style.setProperty("--axis-tilt", `${(pitch - 8) * 0.5}deg`);
