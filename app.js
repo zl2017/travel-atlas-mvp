@@ -64,8 +64,11 @@
     });
     atlasMap.on("dragstart", () => frame?.classList.add("is-dragging"));
     atlasMap.on("move", () => {
-      const longitude = atlasMap.getCenter().lng;
+      const center = atlasMap.getCenter();
+      const longitude = center.lng;
+      const viewPitch = Math.max(-32, Math.min(32, (initialView.center[1] - center.lat) * 0.72));
       gimbal?.style.setProperty("--axis-turn", `${normalizeAngle(longitude - initialView.center[0])}deg`);
+      gimbal?.style.setProperty("--view-pitch", `${viewPitch}deg`);
     });
     atlasMap.on("dragend", () => frame?.classList.remove("is-dragging"));
     atlasMap.on("rotatestart", () => frame?.classList.add("is-dragging"));
@@ -75,6 +78,7 @@
       atlasMap.easeTo({ ...initialView, duration: 900, essential: true });
       ring?.style.setProperty("--atlas-turn", `${initialView.bearing}deg`);
       gimbal?.style.setProperty("--axis-turn", "0deg");
+      gimbal?.style.setProperty("--view-pitch", "0deg");
     });
     window.__atlasMap = atlasMap;
   }

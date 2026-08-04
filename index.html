@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" />
-    <link rel="stylesheet" href="styles.css?v=atlas-maplibre-6" />
+    <link rel="stylesheet" href="styles.css?v=atlas-maplibre-7" />
   </head>
   <body class="atlas-page">
     <div class="grain" aria-hidden="true"></div>
@@ -35,16 +35,18 @@
           <div class="orbit orbit-a"></div>
           <div class="orbit orbit-b"></div>
           <div class="globe-gimbal">
-            <div class="globe-map-frame">
-              <div id="atlas-map" class="globe-map" role="application" aria-label="旅行地点世界地图"></div>
-              <div class="globe-map-glare" aria-hidden="true"></div>
-              <div class="globe-map-chrome"><span>LIVE ATLAS / COLOR MAP</span><span>N—S AXIS · EQUATOR LOCK</span></div>
+            <div class="globe-physical-frame">
+              <div class="globe-map-frame">
+                <div id="atlas-map" class="globe-map" role="application" aria-label="旅行地点世界地图"></div>
+                <div class="globe-map-glare" aria-hidden="true"></div>
+                <div class="globe-map-chrome"><span>LIVE ATLAS / COLOR MAP</span><span>N—S AXIS · EQUATOR LOCK</span></div>
+              </div>
+              <span class="globe-equator-plane" aria-hidden="true"></span>
+              <span class="globe-meridian-plane" aria-hidden="true"></span>
+              <span class="globe-axis globe-axis-vertical" aria-hidden="true"></span>
+              <span class="globe-pole globe-pole-north" aria-hidden="true">N</span>
+              <span class="globe-pole globe-pole-south" aria-hidden="true">S</span>
             </div>
-            <span class="globe-equator-plane" aria-hidden="true"></span>
-            <span class="globe-meridian-plane" aria-hidden="true"></span>
-            <span class="globe-axis globe-axis-vertical" aria-hidden="true"></span>
-            <span class="globe-pole globe-pole-north" aria-hidden="true">N</span>
-            <span class="globe-pole globe-pole-south" aria-hidden="true">S</span>
           </div>
           <div class="globe-map-ring" aria-hidden="true"></div>
           <p class="globe-caption"><span class="live-dot"></span> 01 active journey · drag to explore</p>
@@ -73,6 +75,6 @@
     <footer class="site-footer"><span>旅记可视化 / PUBLIC EDITION</span><span>made for the road ahead</span></footer>
     <script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
     <script src="data/norway.js"></script>
-    <script src="app.js?v=atlas-maplibre-14"></script>
+    <script src="app.js?v=atlas-maplibre-15"></script>
   </body>
 </html>
